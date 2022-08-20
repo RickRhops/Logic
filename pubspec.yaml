@@ -73,5 +73,23 @@ flutter:
       fonts:
         - asset: fonts/IBMPlexSans-Regular.ttf
 
+    - family: BIZ UDGothic
+      fonts:
+        - asset: fonts/BIZUDGothic-Bold.ttf
+        - asset: fonts/BIZUDGothic-Regular.ttf
+
+    - family: BIZ UDMincho
+      fonts:
+        - asset: fonts/BIZUDMincho-Regular.ttf
+
+    - family: BIZ UDPGothic
+      fonts:
+        - asset: fonts/BIZUDPGothic-Bold.ttf
+        - asset: fonts/BIZUDPGothic-Regular.ttf
+
+    - family: BIZ UDPMincho
+      fonts:
+        - asset: fonts/BIZUDPMincho-Regular.ttf
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
