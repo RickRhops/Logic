@@ -21,11 +21,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: GestureDetector(
-        onTap: () {FocusScope.of(context).unfocus();},
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
         child: Scaffold(
           appBar: AppBar(
-            elevation: 0,
-            toolbarHeight: 52,
+            toolbarHeight: 48,
             flexibleSpace: const TopBar(),
           ),
           body: Column(
@@ -79,7 +80,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNoteCard(Note itemNote, AppDatabase database) {
-    const cardRadius = 4.0;
 
     return GestureDetector(
       onTap: () {
@@ -93,17 +93,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             _deleteNoteAlertDialog(context, itemNote),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2.0),
+        padding: const EdgeInsets.symmetric(vertical: 1.0),
         child: Align(
           alignment: Alignment.centerRight,
           child: Container(
             decoration: const BoxDecoration(
               color: AppColors.noteCard,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(cardRadius),
-                bottomLeft: Radius.circular(cardRadius),
-                bottomRight: Radius.circular(cardRadius),
-              ),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 16, 16),
@@ -111,7 +106,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 itemNote.content,
                 style: const TextStyle(
                   color: AppColors.noteCardText,
-                  fontSize: 16,
+                  fontSize: 18,
                 ),
               ),
             ),
@@ -123,25 +118,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   AlertDialog _deleteNoteAlertDialog(BuildContext context, Note itemNote) {
     return AlertDialog(
-      backgroundColor: AppColors.gray2,
-      shape: null,
-      elevation: 0,
-      content: const Text('Delete Note?'),
-      contentTextStyle: const TextStyle(color: AppColors.gray5),
+      
+      actionsAlignment: MainAxisAlignment.center,
+      buttonPadding: const EdgeInsets.symmetric(horizontal: 2),
+      insetPadding: const EdgeInsets.all(0),
+      actionsPadding: const EdgeInsets.all(8),
+
+      title: const Text('Delete Note?'),
       actions: <Widget>[
         TextButton(
-          style: TextButton.styleFrom(primary: AppColors.gray7),
+          style: TextButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.zero)),
+            primary: AppColors.gray90,
+            backgroundColor: AppColors.gray30,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+            textStyle: const TextStyle(
+              fontFamily: 'BIZ UDMincho',
+              fontSize: 18,
+            ),
+          ),
           onPressed: () => Navigator.pop(context, 'CANCEL'),
           child: const Text('CANCEL'),
         ),
         TextButton(
-          style: TextButton.styleFrom(primary: AppColors.gray7),
+          style: TextButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.zero)),
+            primary: AppColors.gray90,
+            backgroundColor: AppColors.red,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+            textStyle: const TextStyle(
+              fontFamily: 'BIZ UDMincho',
+              fontSize: 18,
+            ),
+          ),
           onPressed: () {
             Navigator.pop(context, 'DELETE');
             final database = ref.read(AppDatabase.provider);
             database.deleteNote(itemNote);
             ScaffoldMessenger.of(context)
-                .showSnackBar(_noteDeletedNotification());
+              .showSnackBar(_noteDeletedNotification());
           },
           child: const Text('DELETE'),
         ),
@@ -151,15 +168,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   SnackBar _noteDeletedNotification() {
     return const SnackBar(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.zero)),
       content: Text("Note deleted"),
-      width: null,
-      duration: Duration(milliseconds: 1200),
+      duration: Duration(milliseconds: 1000),
       margin: EdgeInsets.only(
-        bottom: 72,
-        left: 48,
-        right: 48,
+        bottom: 64,
       ),
-      dismissDirection: DismissDirection.endToStart,
       padding: EdgeInsets.symmetric(
         vertical: 12,
         horizontal: 16,
@@ -169,15 +184,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   SnackBar _noteCopiedNotification() {
     return const SnackBar(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.zero)),
       content: Text("Note copied"),
-      width: null,
-      duration: Duration(milliseconds: 1200),
+      duration: Duration(milliseconds: 1000),
       margin: EdgeInsets.only(
-        bottom: 72,
-        left: 48,
-        right: 48,
+        bottom: 64,
       ),
-      dismissDirection: DismissDirection.endToStart,
       padding: EdgeInsets.symmetric(
         vertical: 12,
         horizontal: 16,
@@ -187,22 +200,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Container _newNoteInputBar() {
     return Container(
-      constraints: const BoxConstraints(minHeight: 64, maxHeight: 140),
+      constraints: const BoxConstraints(minHeight: 64, maxHeight: 180),
       color: AppColors.background,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: const BoxDecoration(
             color: AppColors.newNoteInputBar,
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.newNoteInputBorder,
-                width: 1,
-              ),
-            ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -220,19 +227,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   TextField _newNoteInputField() {
     return TextField(
       controller: newNoteInputController,
-      cursorColor: AppColors.newNoteInputIcon,
+      cursorColor: AppColors.cursorColor,
       maxLines: 6,
       minLines: 1,
       style: const TextStyle(
         color: AppColors.newNoteInputFieldText,
-        fontSize: 16,
+        fontSize: 18,
       ),
       decoration: const InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 12),
         hintText: 'New Note...',
         hintStyle: TextStyle(
           color: AppColors.newNoteInputFieldHint,
-          fontSize: 16,
+          fontSize: 18,
         ),
         border: InputBorder.none,
       ),
