@@ -21,17 +21,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          body: Column(
-            children: <Widget>[
-              Expanded(child: _buildNotesList(context)),
-              _newNoteInputBar(),
-            ],
-          ),
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(child: _buildNotesList(context)),
+            _newNoteInputBar(),
+          ],
         ),
       ),
     );
@@ -63,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             reverse: true,
             controller: notesListController,
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(left: 24, right: 8),
+            padding: const EdgeInsets.only(left: 16, right: 8),
             itemCount: notes.length,
             itemBuilder: (_, index) {
               final itemCount = notes.length;
@@ -93,6 +88,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       endActionPane: ActionPane(
         extentRatio: 0.25,
+        openThreshold: 0.35,
         motion: const ScrollMotion(),
         children: [
           SlidableAction(
@@ -106,23 +102,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 1.0),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                top: BorderSide(width: 1, color: AppColors.noteCardBorder))
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 16, 16),
-              child: Text(
-                itemNote.content,
-                style: const TextStyle(
-                  color: AppColors.noteCardText,
-                  fontSize: 18,
-                ),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(width: 1, color: AppColors.noteCardBorder))
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            child: Text(
+              itemNote.content,
+              style: const TextStyle(
+                color: AppColors.noteCardText,
+                fontSize: 18,
               ),
             ),
           ),
@@ -134,7 +127,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Container _newNoteInputBar() {
     return Container(
       constraints: const BoxConstraints(minHeight: 64, maxHeight: 180),
-      color: AppColors.background,
       child: Row(
         children: <Widget>[
           Expanded(
@@ -160,8 +152,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return TextField(
       controller: newNoteInputController,
       cursorColor: AppColors.cursorColor,
-      cursorHeight: 18,
-      cursorWidth: 4,
+      cursorWidth: 7,
       maxLines: 6,
       minLines: 1,
       style: const TextStyle(
