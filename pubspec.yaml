@@ -35,6 +35,7 @@ dependencies:
   path: ^1.8.1
   provider: ^6.0.3
   flutter_riverpod: ^1.0.4
+  flutter_slidable: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -59,37 +60,15 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: IBM Plex Sans
-      fonts:
-        - asset: fonts/IBMPlexSans-Regular.ttf
-
-    - family: BIZ UDGothic
-      fonts:
-        - asset: fonts/BIZUDGothic-Bold.ttf
-        - asset: fonts/BIZUDGothic-Regular.ttf
-
     - family: BIZ UDMincho
       fonts:
         - asset: fonts/BIZUDMincho-Regular.ttf
-
-    - family: BIZ UDPGothic
-      fonts:
-        - asset: fonts/BIZUDPGothic-Bold.ttf
-        - asset: fonts/BIZUDPGothic-Regular.ttf
-
-    - family: BIZ UDPMincho
-      fonts:
-        - asset: fonts/BIZUDPMincho-Regular.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

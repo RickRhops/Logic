@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:drift/drift.dart' as prefix;
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logic/database/database.dart';
 import 'package:logic/theme.dart';
-import '../widgets.dart';
+import '../widgets/scroll_behavior.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -25,10 +26,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 48,
-            flexibleSpace: const TopBar(),
-          ),
           body: Column(
             children: <Widget>[
               Expanded(child: _buildNotesList(context)),
@@ -80,17 +77,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNoteCard(Note itemNote, AppDatabase database) {
-
-    return GestureDetector(
-      onTap: () {
-        Clipboard.setData(ClipboardData(text: itemNote.content)).then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(_noteCopiedNotification());
-        });
-      },
-      onLongPress: () => showDialog<String>(
-        context: context,
-        builder: (BuildContext context) =>
-            _deleteNoteAlertDialog(context, itemNote),
+    return Slidable(
+      startActionPane: ActionPane(
+        extentRatio: 0.2,
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            backgroundColor: AppColors.black,
+            foregroundColor: AppColors.secondaryText,
+            label: 'Copy',
+            onPressed: (BuildContext context) =>
+                Clipboard.setData(ClipboardData(text: itemNote.content))
+          ),
+        ],
+      ),
+      endActionPane: ActionPane(
+        extentRatio: 0.25,
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            backgroundColor: AppColors.black,
+            foregroundColor: AppColors.red,
+            label: 'Delete',
+            onPressed: (BuildContext context) {
+              final database = ref.read(AppDatabase.provider);
+              database.deleteNote(itemNote);
+            }
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 1.0),
@@ -98,7 +112,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           alignment: Alignment.centerRight,
           child: Container(
             decoration: const BoxDecoration(
-              color: AppColors.noteCard,
+              border: Border(
+                top: BorderSide(width: 1, color: AppColors.noteCardBorder))
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 16, 16),
@@ -116,111 +131,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  AlertDialog _deleteNoteAlertDialog(BuildContext context, Note itemNote) {
-    return AlertDialog(
-      
-      actionsAlignment: MainAxisAlignment.center,
-      buttonPadding: const EdgeInsets.symmetric(horizontal: 2),
-      insetPadding: const EdgeInsets.all(0),
-      actionsPadding: const EdgeInsets.all(8),
-
-      title: const Text('Delete Note?'),
-      actions: <Widget>[
-        TextButton(
-          style: TextButton.styleFrom(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.zero)),
-            primary: AppColors.gray90,
-            backgroundColor: AppColors.gray30,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
-            textStyle: const TextStyle(
-              fontFamily: 'BIZ UDMincho',
-              fontSize: 18,
-            ),
-          ),
-          onPressed: () => Navigator.pop(context, 'CANCEL'),
-          child: const Text('CANCEL'),
-        ),
-        TextButton(
-          style: TextButton.styleFrom(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.zero)),
-            primary: AppColors.gray90,
-            backgroundColor: AppColors.red,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
-            textStyle: const TextStyle(
-              fontFamily: 'BIZ UDMincho',
-              fontSize: 18,
-            ),
-          ),
-          onPressed: () {
-            Navigator.pop(context, 'DELETE');
-            final database = ref.read(AppDatabase.provider);
-            database.deleteNote(itemNote);
-            ScaffoldMessenger.of(context)
-              .showSnackBar(_noteDeletedNotification());
-          },
-          child: const Text('DELETE'),
-        ),
-      ],
-    );
-  }
-
-  SnackBar _noteDeletedNotification() {
-    return const SnackBar(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.zero)),
-      content: Text("Note deleted"),
-      duration: Duration(milliseconds: 1000),
-      margin: EdgeInsets.only(
-        bottom: 64,
-      ),
-      padding: EdgeInsets.symmetric(
-        vertical: 12,
-        horizontal: 16,
-      ),
-    );
-  }
-
-  SnackBar _noteCopiedNotification() {
-    return const SnackBar(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.zero)),
-      content: Text("Note copied"),
-      duration: Duration(milliseconds: 1000),
-      margin: EdgeInsets.only(
-        bottom: 64,
-      ),
-      padding: EdgeInsets.symmetric(
-        vertical: 12,
-        horizontal: 16,
-      ),
-    );
-  }
-
   Container _newNoteInputBar() {
     return Container(
       constraints: const BoxConstraints(minHeight: 64, maxHeight: 180),
       color: AppColors.background,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.newNoteInputBar,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: _newNoteInputField(),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: _newNoteInputField(),
-                ),
-                _newNoteInputButton(),
-              ],
-            ),
-          ),
-        ),
+          _newNoteInputButton(),
+        ],
       ),
+    );
+  }
+
+  TextButton _newNoteInputButton() {
+    return TextButton(
+      onPressed: () => _addNewNote(),
+      child: const Text(
+        'Save',
+        style: TextStyle(color: AppColors.secondaryText),
+      )
     );
   }
 
@@ -228,6 +160,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return TextField(
       controller: newNoteInputController,
       cursorColor: AppColors.cursorColor,
+      cursorHeight: 18,
+      cursorWidth: 4,
       maxLines: 6,
       minLines: 1,
       style: const TextStyle(
@@ -235,31 +169,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         fontSize: 18,
       ),
       decoration: const InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 12),
+        contentPadding: EdgeInsets.all(16),
         hintText: 'New Note...',
         hintStyle: TextStyle(
           color: AppColors.newNoteInputFieldHint,
           fontSize: 18,
         ),
         border: InputBorder.none,
-      ),
-    );
-  }
-
-  Padding _newNoteInputButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextButton(
-        style: TextButton.styleFrom(
-          minimumSize: Size.zero,
-          padding: EdgeInsets.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        onPressed: () => _addNewNote(),
-        child: SizedBox(
-          height: 32,
-          child: Image.asset('assets/save_note_icon.png'),
-        ),
       ),
     );
   }
