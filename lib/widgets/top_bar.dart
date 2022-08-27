@@ -10,17 +10,11 @@ class TopBar extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.topBarBackground,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.topBarBorder,
-            width: 1,
-          ),
-        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: Image.asset('assets/top_bar_logo.png'
           ),
         ),
